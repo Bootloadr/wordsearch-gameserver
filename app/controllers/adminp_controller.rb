@@ -13,8 +13,9 @@ class AdminpController < ApplicationController
     cookies.signed[:game_id] = game_id
     REDIS.sadd(game_id,player_id)
     REDIS.hmset player_id,"name",nick_name,"points", 0, "admin", true
-    REDIS.set("status_#{game_id}","Waiting") 
-    redirect_to padminp_index_path , :flash => {:notice => "Hi #{nick_name} Your GameID = #{game_id} and PlayerID = #{player_id}"}
+    REDIS.set("status_#{game_id}","Waiting")
+    REDIS.set("turn_#{game_id}", player_id)
+    redirect_to padminp_index_path , :flash => {:notice => "Hi #{nick_name} Your GameID:  #{game_id}  and  PlayerID:  #{player_id}"}
  end
   
   private

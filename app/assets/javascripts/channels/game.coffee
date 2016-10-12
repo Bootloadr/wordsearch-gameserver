@@ -9,7 +9,8 @@ App.game = App.cable.subscriptions.create "GameChannel",
     # Called when there's incoming data on the websocket for this channel
     $('#status').html(data.gamestatus)
     $('#currentturn').html(data.turn)
-    alert(data['msg'])
+    #$('#award').html(data.award)
+    alert(data['msg']+data['award'])
     
 
   move: (word) ->

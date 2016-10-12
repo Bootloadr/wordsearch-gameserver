@@ -30,7 +30,7 @@ class PadminpController < ApplicationController
     #REDIS.rpush "grid_#{game_id}" @grid.rows
     #elements = REDIS.lrange("demo", 0, -1 )
     #render text: REDIS.smembers("wordlist_#{:game_id}")
-    REDIS.set("turn_#{game_id}", cookies.signed[:player_id])
+    #REDIS.set("turn_#{game_id}", cookies.signed[:player_id])
     REDIS.set("status_#{game_id}","In Play")
     redirect_to grid_index_path
     end

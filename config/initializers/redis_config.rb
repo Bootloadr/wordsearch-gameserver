@@ -1,3 +1,1 @@
-uri = URI.parse(ENV["REDISTOGO_URL"])
-REDIS = Redis.new(:host => uri.host, :port => uri.port, :password => uri.password)
-Resque.redis = REDIS
+REDIS = Redis.new(Rails.application.config_for("cable"))

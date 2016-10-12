@@ -7,8 +7,12 @@ module ApplicationCable
       REDIS.set("user_#{cookies.signed[:player_id]}", cookies.signed[:game_id])
     end
     protected
-   def find_verified_user
-      (current_user = env['warden'].user) ? current_user : reject_unauthorized_connection
-   end
+      def find_verified_user
+        if current_user = cookies.signed[:player_id]
+          current_user
+        else
+          reject_unauthorized_connection
+        end
+      end
   end
 end
