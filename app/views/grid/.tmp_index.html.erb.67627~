@@ -1,0 +1,13 @@
+<h1 class="title">GameServer</h1>
+<h2 id="currentturn"></h2>
+<div>
+<%= grid() %>
+</div>
+<%= text_field_tag :body, nil, id: 'game-move' ,placeholder: 'Enter Found Word...'%>
+<p id="status">Game Status:</p>
+
+<%= button_to 'Game Info', game_info_path, method: :post %>
+
+<!--<%= text_field_tag("playerId", cookies.signed[:player_id], :id => "plr")%> -->
+ <!--<%= text_field_tag("gameId", cookies.signed[:game_id], :id => "gm")%> -->
+<!--<%= REDIS.smembers("wordlist")%> -->

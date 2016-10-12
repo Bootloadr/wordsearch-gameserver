@@ -1,0 +1,11 @@
+<% if flash[:notice] %>
+  <p style="color: green;"><%= flash[:notice] %></p>
+<% end %>
+<%= form_for :newp, url: newp_join_path do |f| %>
+  <%= f.label :nick, 'Enter a Nick' %><br/>
+  <%= f.text_field :nick %><br/>
+  <%= f.label :gameId, 'Enter gameId' %><br/>
+  <%= f.text_field :gameId %><br/>
+
+  <%= f.submit 'Join The Game' %>
+<% end %>

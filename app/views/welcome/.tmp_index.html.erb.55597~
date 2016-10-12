@@ -1,0 +1,5 @@
+<% @page_title = "Home"%>
+
+<h1>Welcome to GameServer</h1>
+<%= link_to 'Create' , adminp_index_path %>
+<%= link_to 'Join' , newp_index_path %>

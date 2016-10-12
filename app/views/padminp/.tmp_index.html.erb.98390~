@@ -1,0 +1,5 @@
+<h1>Hello Game Admin</h1>
+<% if flash[:notice] %>
+  <p style="color: green;"><%= flash[:notice] %></p>
+<% end %>
+<%= button_to 'Play', padminp_play_path, method: :post %>

@@ -1,0 +1,2 @@
+<h1>Hello Player</h1>
+<%= button_to 'GameWindow', pnewp_play_path, method: :post %>

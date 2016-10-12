@@ -1,0 +1,6 @@
+<%= form_for :adminp, url: adminp_create_path do |f| %>
+  <%= f.label :nick, 'Enter a Nick' %><br/>
+  <%= f.text_field :nick %><br/>
+
+  <%= f.submit 'Create' %>
+<% end %>

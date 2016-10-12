@@ -1,0 +1,2 @@
+module PnewpHelper
+end

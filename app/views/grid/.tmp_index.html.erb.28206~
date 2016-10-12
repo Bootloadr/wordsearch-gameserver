@@ -1,0 +1,8 @@
+<h1 class="title">GameServer</h1>
+
+<div>
+<%= grid(@grid) %>
+</div>
+<form> <label>Enter The Word:</label><br> 
+<input type="text" data-behavior="room_speaker"> 
+</form>

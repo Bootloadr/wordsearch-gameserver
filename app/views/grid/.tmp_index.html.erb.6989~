@@ -1,0 +1,10 @@
+<h1 class="title">GameServer</h1>
+
+<div>
+<%= grid(@grid) %>
+</div>
+<%= text_field_tag :body, nil, id: 'game-move' ,placeholder: 'Enter Found Word...'%>
+<p id="status"></p>
+
+
+<!--<%= REDIS.smembers("wordlist")%> -->

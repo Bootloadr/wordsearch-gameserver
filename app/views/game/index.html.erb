@@ -1,0 +1,20 @@
+
+<h1>Listing Players and their scores</h1>
+<%= "Game Status: #{REDIS.get("status_#{cookies.signed[:game_id]}")}" %>
+<div>
+<%= "TURN: #{REDIS.hget(REDIS.get("turn_#{cookies.signed[:game_id]}"),"name")}"%>
+</div>
+<div>
+    <%= game() %>
+</div>
+<div>
+	<%= grid()%>
+</div>
+<div>
+	<%= button_to 'BackToGame', game_back_path, method: :post %>
+</div>
+
+<h2>Remaining Words</h2>
+<%= REDIS.sdiff("wordlist","foundwords_#{cookies.signed[:game_id]}")%>
+<h2>Found Words</h2>
+<%= REDIS.smembers("foundwords_#{cookies.signed[:game_id]}")%>
