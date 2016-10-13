@@ -18,6 +18,7 @@ class Game < ApplicationRecord
     if data['word'].blank?
       if REDIS.get("passcount_#{game_id}").to_i == (REDIS.scard(game_id) - 1).to_i 
         REDIS.set("status_#{game_id}","Completed")
+        REDIS.set("turn_#{game_id}", "123")
         turn = ""
         ActionCable.server.broadcast "game_#{game_id}", { msg: "Game Finished" , turn: turn, award: "" , gamestatus: REDIS.get("status_#{game_id}")}
         return
@@ -32,6 +33,7 @@ class Game < ApplicationRecord
     # ALL WORDS FOUND
     if REDIS.scard("foundwords_#{game_id}") == REDIS.scard("wordlist")
         REDIS.set("status_#{game_id}","Completed")
+        REDIS.set("turn_#{game_id}", "123")
         turn = ""
         ActionCable.server.broadcast "game_#{game_id}", { msg: "Game Finished" , turn: turn, award: "" , gamestatus: REDIS.get("status_#{game_id}")}
         return
