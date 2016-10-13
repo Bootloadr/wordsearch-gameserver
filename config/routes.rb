@@ -1,4 +1,9 @@
 Rails.application.routes.draw do
+ 
+  get 'welcome/join'
+
+  get 'welcome/create'
+ 
   get 'game/index'
   post 'game/info'
   post 'game/back'
@@ -13,10 +18,6 @@ Rails.application.routes.draw do
   post 'newp/join'
 
   post 'adminp/create'
-
-  get 'welcome/join'
-
-  get 'welcome/create'
 
   # For details on the DSL available within this file, see http://guides.rubyonrails.org/routing.html
   root to: 'welcome#index'

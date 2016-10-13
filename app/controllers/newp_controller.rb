@@ -4,6 +4,9 @@ class NewpController < ApplicationController
   end
   
   def join
+    if params[:newp][:gameId].blank?
+      redirect_to newp_index_path, :flash => {:notice => "Please Enter GameID!"} and return
+    end
     if REDIS.scard(params[:newp][:gameId]) == 5
       redirect_to newp_index_path, :flash => {:notice => "Game is Full! You Can't Join"} and return 
     end
