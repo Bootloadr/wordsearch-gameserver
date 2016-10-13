@@ -10,7 +10,7 @@ App.game = App.cable.subscriptions.create "GameChannel",
     $('#status').html(data.gamestatus)
     $('#currentturn').html(data.turn)
     #$('#award').html(data.award)
-    alert(data['msg']+data['award'])
+    $('#result').html(data.msg + data.award)
     
 
   move: (word) ->
