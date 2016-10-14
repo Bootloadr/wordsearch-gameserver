@@ -16,24 +16,29 @@ class Game < ApplicationRecord
     end
     #Pass Logic
     if data['word'].blank?
-      if REDIS.get("passcount_#{game_id}").to_i == (REDIS.scard(game_id) - 1).to_i 
+      REDIS.srem("plrtoplay_#{game_id}",plr_id)
+      if REDIS.scard("plrtoplay_#{game_id}").to_i == 0 
         REDIS.set("status_#{game_id}","Completed")
         REDIS.set("turn_#{game_id}", "123")
         turn = ""
         ActionCable.server.broadcast "game_#{game_id}", { msg: "Game Finished" , turn: turn, award: "" , gamestatus: REDIS.get("status_#{game_id}")}
         return
       end
-      temp = REDIS.srandmember(game_id) 
+      temp = REDIS.srandmember("plrtoplay_#{game_id}") 
       turn = "Turn: #{REDIS.hget(temp,"name")}"
       REDIS.set("turn_#{game_id}",temp)
-      REDIS.set("passcount_#{game_id}", (REDIS.get("passcount_#{game_id}").to_i + 1).to_s)
+      #REDIS.set("passcount_#{game_id}", (REDIS.get("passcount_#{game_id}").to_i + 1).to_s)
       ActionCable.server.broadcast "game_#{game_id}", { msg: "PASS!" , turn: turn, award: "", gamestatus: REDIS.get("status_#{game_id}")}
       return
     end
     #Word Cheking
-    REDIS.set("passcount_#{game_id}", 0)
+    #REDIS.set("passcount_#{game_id}", 0)
+    REDIS.sunionstore("plrtoplay_#{game_id}",game_id)
     board = REDIS.lrange("grid_#{game_id}", 0, -1 )
-    temp = REDIS.srandmember(game_id) 
+    temp = REDIS.srandmember("plrtoplay_#{game_id}")
+    while temp == plr_id do
+            temp = REDIS.srandmember("plrtoplay_#{game_id}")
+    end
     turn = "Turn: #{REDIS.hget(temp,"name")}"
     REDIS.set("turn_#{game_id}",temp)
     award = " Points awarded: 0"
@@ -49,11 +54,11 @@ class Game < ApplicationRecord
         award = " Points awarded: 1"
         
         #ALL WORD FOUND
-        if REDIS.get("wordsongrid_#{game_id}").to_i == REDIS.scard("foundwords_#{game_id}").to_i
+        if REDIS.get("wordcounts_#{game_id}").to_i == REDIS.scard("foundwords_#{game_id}").to_i
         REDIS.set("status_#{game_id}","Completed")
         REDIS.set("turn_#{game_id}", "123")
         turn = ""
-        ActionCable.server.broadcast "game_#{game_id}", { msg: "Game Finished" , turn: turn, award: award , gamestatus: REDIS.get("status_#{game_id}")}
+        ActionCable.server.broadcast "game_#{game_id}", { msg: "Game Finished! No new word left on Grid" , turn: turn, award: award , gamestatus: REDIS.get("status_#{game_id}")}
         return
         end
         
@@ -64,7 +69,8 @@ class Game < ApplicationRecord
     ActionCable.server.broadcast "game_#{game_id}", { msg: msg , turn: turn, award: award , gamestatus: REDIS.get("status_#{game_id}")}  
   end
   
-  private 
+  private
+  
    # verify the words
   def self.search(word, board)
        
@@ -94,4 +100,31 @@ class Game < ApplicationRecord
        return true if word.length <= 1
        return search_for(word[1,word.length-1],board, x + dx, y + dy, dx, dy)
      end
+   
+   #total words on grid
+   def self.gridset(board,game_id)
+       0.upto(14) do |y|
+         0.upto(14) do |x|
+           [-1, 0, 1].each do |dy|
+             [-1, 0, 1].each do |dx|
+               next if dx == 0 and dy == 0
+                word = ""               
+                self.gridset_all(word,game_id,board, x, y, dx, dy) 
+               end
+             end
+           end
+         end
+    end
+     
+     def self.gridset_all(word,game_id,board, x, y, dx, dy)
+              return  if x < 0                 or
+                       x >= 15 or
+                       y < 0                 or
+                       y >= 15
+              word = word + board[15*x+y]
+              REDIS.sadd("gridwords_#{game_id}",word)
+              gridset_all(word,game_id,board, x + dx, y + dy, dx, dy)
+              
+     end
+     
 end
