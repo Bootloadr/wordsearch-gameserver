@@ -25,12 +25,18 @@ class PadminpController < ApplicationController
       y += 1
       end
     arr.each { |t| REDIS.sadd("foundwords_#{game_id}",t)}
-    #@grid.save
+    
     REDIS.pipelined{ @grid.rows.each{ |elem| REDIS.rpush("grid_#{game_id}",elem) } }
-    #REDIS.rpush "grid_#{game_id}" @grid.rows
-    #elements = REDIS.lrange("demo", 0, -1 )
-    #render text: REDIS.smembers("wordlist_#{:game_id}")
-    #REDIS.set("turn_#{game_id}", cookies.signed[:player_id])
+   
+    #Counting Total number of words present on the Grid, to complete the game when all words on grid identified
+    #Processor will go high in doing this, each words of dictionary are verified for presennce on grid to get word counts on grid
+    #Its a time consuming task, so when ADMIN starts game, he has to wait for 1 to 2 mins to load game window to satify all word found!    
+    elements = REDIS.smembers("wordlist")
+    board = REDIS.lrange("grid_#{game_id}", 0, -1 )
+    total = 0   
+    elements.each{ |w|  total += 1 if Game.search(w, board)}
+    REDIS.set("wordsongrid_#{game_id}", total) 
+    
     REDIS.set("status_#{game_id}","In Play")
     redirect_to grid_index_path
     end

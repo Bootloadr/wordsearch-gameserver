@@ -30,16 +30,8 @@ class Game < ApplicationRecord
       ActionCable.server.broadcast "game_#{game_id}", { msg: "PASS!" , turn: turn, award: "", gamestatus: REDIS.get("status_#{game_id}")}
       return
     end
-    # ALL WORDS FOUND
-    if REDIS.scard("foundwords_#{game_id}") == REDIS.scard("wordlist")
-        REDIS.set("status_#{game_id}","Completed")
-        REDIS.set("turn_#{game_id}", "123")
-        turn = ""
-        ActionCable.server.broadcast "game_#{game_id}", { msg: "Game Finished" , turn: turn, award: "" , gamestatus: REDIS.get("status_#{game_id}")}
-        return
-    end
-      
     #Word Cheking
+    REDIS.set("passcount_#{game_id}", 0)
     board = REDIS.lrange("grid_#{game_id}", 0, -1 )
     temp = REDIS.srandmember(game_id) 
     turn = "Turn: #{REDIS.hget(temp,"name")}"
@@ -55,11 +47,20 @@ class Game < ApplicationRecord
         REDIS.hset(plr_id, "points", (REDIS.hget(plr_id, "points").to_i + 1).to_s)
         msg = "#{REDIS.hget(plr_id,"name")}, SUCCESS!"
         award = " Points awarded: 1"
+        
+        #ALL WORD FOUND
+        if REDIS.get("wordsongrid_#{game_id}").to_i == REDIS.scard("foundwords_#{game_id}").to_i
+        REDIS.set("status_#{game_id}","Completed")
+        REDIS.set("turn_#{game_id}", "123")
+        turn = ""
+        ActionCable.server.broadcast "game_#{game_id}", { msg: "Game Finished" , turn: turn, award: award , gamestatus: REDIS.get("status_#{game_id}")}
+        return
+        end
+        
         ActionCable.server.broadcast "game_#{game_id}", { msg: msg , turn: turn, award: award, gamestatus: REDIS.get("status_#{game_id}")}
        return
     end
     msg = "#{REDIS.hget(plr_id,"name")}, FAILED!"
-    REDIS.set("passcount_#{game_id}", 0)
     ActionCable.server.broadcast "game_#{game_id}", { msg: msg , turn: turn, award: award , gamestatus: REDIS.get("status_#{game_id}")}  
   end
   
