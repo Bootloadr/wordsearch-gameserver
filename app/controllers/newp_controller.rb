@@ -10,6 +10,11 @@ class NewpController < ApplicationController
     if REDIS.scard(params[:newp][:gameId]) == 5
       redirect_to newp_index_path, :flash => {:notice => "Game is Full! You Can't Join"} and return 
     end
+
+    if REDIS.get("status_#{params[:newp][:gameId]}") != ("Waiting").to_s
+      redirect_to newp_index_path, :flash => {:notice => "Game has Started! You Can't Join"} and return 
+    end
+    
     if REDIS.scard(params[:newp][:gameId]) != 0
     #render text: "#{params[:newp][:gameId]}"
     player_id = gen_player_id
